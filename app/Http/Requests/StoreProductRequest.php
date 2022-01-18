@@ -27,7 +27,7 @@ class StoreProductRequest extends FormRequest
             'title' => 'required|string|max:255',
             'size' => 'required|string',
             'price' => 'required|numeric',
-            'gender' => 'required|string',
+            'gender' => 'required|in:male,female',
             'mark' => 'string|nullable',
             'image' => 'required|image',
             'category_id' => 'required|numeric',

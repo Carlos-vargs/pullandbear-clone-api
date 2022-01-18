@@ -14,15 +14,16 @@ class Product extends Model
         'size',
         'price',
         'mark',
-        'product_id',
+        'category_id',
+        'image',    
     ];
 
-    /**image
+    /**
      * Get the category that owns the Product
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
@@ -32,7 +33,7 @@ class Product extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function productImages(): Hasmany
+    public function productImages()
     {
         return $this->hasMany(ProductImages::class);
     }

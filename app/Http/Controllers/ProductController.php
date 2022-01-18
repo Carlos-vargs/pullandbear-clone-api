@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -15,7 +18,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return "here we going";
+        return ProductResource::collection(Product::all());
     }
 
     /**
@@ -26,7 +29,24 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        //$fields = $request->validated();
+        
+        $validatedFields = $request->safe()->except(['image']);
+
+        //create product
+        $product = Product::create($validatedFields);
+
+        if ($product) {
+
+            //save img
+            $url_image = $request->file('image');
+
+            $image = $url_image->store('product', 'public');
+
+            $product->productImages()->create(compact('image'));
+        }
+
+        return ProductResource::make($product);
     }
 
     /**

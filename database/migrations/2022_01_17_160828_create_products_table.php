@@ -18,7 +18,9 @@ class CreateProductsTable extends Migration
             $table->string('title');
             $table->string('size');
             $table->float('price');
-            $table->string('mark');
+            $table->enum('gender', ['male', 'female']);
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->string('mark')->nullable();
             $table->timestamps();
         });
     }

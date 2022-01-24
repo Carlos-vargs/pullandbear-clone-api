@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -16,9 +16,30 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ProductResource::collection(Product::all());
+
+        $params = $request->query();
+
+        $genderParam = $params['gender'];
+        $filterParam = $params['filter'];
+
+        if ($filterParam == 'clothing') {
+            $result = Product::where('gender', $genderParam)->get();
+        } else {
+            $result = Category::where('name', $filterParam)
+                ->with([
+                    'products' => function ($query) use ($genderParam) {
+                        $query->where('gender', $genderParam);
+                    },
+                ])
+                ->get()
+                ->pluck('products')
+                ->collapse();
+        }
+
+        return ProductResource::collection($result);
+
     }
 
     /**
@@ -29,20 +50,15 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //$fields = $request->validated();
-        
+
         $validatedFields = $request->safe()->except(['image']);
 
-        //create product
+        // $validatedImages = $request->safe()->only(['image']);
+
         $product = Product::create($validatedFields);
 
         if ($product) {
-
-            //save img
-            $url_image = $request->file('image');
-
-            $image = $url_image->store('product', 'public');
-
+            $image = $request->file('image')->store('product', 'public');
             $product->productImages()->create(compact('image'));
         }
 

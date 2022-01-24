@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\ProductImageResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Category;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
@@ -28,8 +28,6 @@ class ProductResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
-
-
 
     }
 }

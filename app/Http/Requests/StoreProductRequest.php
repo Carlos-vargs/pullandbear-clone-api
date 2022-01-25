@@ -29,7 +29,7 @@ class StoreProductRequest extends FormRequest
             'price' => 'required|numeric',
             'gender' => 'required|in:male,female',
             'mark' => 'string|nullable',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'required',
             'category_id' => 'required|numeric',
         ];
     }

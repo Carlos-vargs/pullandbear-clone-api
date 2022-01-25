@@ -53,13 +53,17 @@ class ProductController extends Controller
 
         $validatedFields = $request->safe()->except(['image']);
 
-        // $validatedImages = $request->safe()->only(['image']);
+        $validatedImages = $request->safe()->only(['image']);
 
         $product = Product::create($validatedFields);
 
         if ($product) {
-            $image = $request->file('image')->store('product', 'public');
-            $product->productImages()->create(compact('image'));
+            foreach ($validatedImages as $images) {
+                foreach ($images as $img) {
+                    $image = $img->store('product', 'public');
+                    $product->productImages()->create(compact('image'));
+                }
+            }
         }
 
         return ProductResource::make($product);

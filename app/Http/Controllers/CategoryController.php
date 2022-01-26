@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -14,9 +15,20 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return CategoryResource::collection(Category::all());
+        $params = $request->query();
+
+        $genderParam = $params['gender'];
+
+        $products = Product::where('gender', $genderParam)
+            ->get()
+            ->pluck('category_id')
+            ->unique();
+
+        $categories = Category::findOrFail($products);
+
+        return CategoryResource::collection($categories);
     }
 
     /**

@@ -20,13 +20,20 @@ class CategoryController extends Controller
         $params = $request->query();
 
         $genderParam = $params['gender'];
+        $filterParam = $params['filter'];
 
         $products = Product::where('gender', $genderParam)
             ->get()
             ->pluck('category_id')
             ->unique();
 
-        $categories = Category::findOrFail($products);
+        if ($filterParam == 'clothing') {
+            $categories = Category::findOrFail($products)
+                ->where('name', '!=', 'shoes')
+                ->where('name', '!=', 'bag');
+        } else {
+            $categories = Category::findOrFail($products);
+        }
 
         return CategoryResource::collection($categories);
     }

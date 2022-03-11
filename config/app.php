@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'imgUrl' => env('APP_URL_IMAGE', 'https://pullandbear-clone-api.herokuapp.com/'),
+    'imgUrl' => env('APP_URL_IMAGE', 'http://192.168.100.37:8000/storage/'),
 
     'asset_url' => env('ASSET_URL', null),
 

@@ -21,8 +21,8 @@ Route::get('/products', [ProductController::class, 'index']);
 
 Route::post('/products', [ProductController::class, 'store']);
 
-Route::get('/products/categories', [CategoryController::class, 'index']);
+Route::get('/categories', [CategoryController::class, 'index']);
 
-Route::post('/products/categories', [CategoryController::class, 'store']);
+Route::post('/categories', [CategoryController::class, 'store']);
 
-Route::put('/products/categories/{id}', [CategoryController::class, 'update']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);

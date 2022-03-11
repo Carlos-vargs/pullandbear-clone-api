@@ -11,72 +11,49 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
-        $params = $request->query();
 
-        if (sizeof($params) != 0) {
-            $genderParam = $params['gender'];
-            $filterParam = $params['filter'];
+        (sizeof($request->query) < 2)
+            ? $categories = Category::all()
+            : $categories =  $this->findCategories($request->gender, $request->category);
 
-            $products = Product::where('gender', $genderParam)
-                ->get()
-                ->pluck('category_id')
-                ->unique();
-
-            if ($filterParam == 'clothing') {
-                $categories = Category::findOrFail($products)
-                    ->where('name', '!=', 'shoes')
-                    ->where('name', '!=', 'bags');
-            } else {
-                $categories = Category::findOrFail($products);
-            }
-        } else {
-            $categories = Category::all();
-        }
 
         return CategoryResource::collection($categories);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCategoryRequest  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(StoreCategoryRequest $request)
     {
-        $field = $request->validated();
 
-        $category = Category::create($field);
+        $category = Category::create($request->validated());
 
         return CategoryResource::make($category);
-
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category $category
-     * @return \Illuminate\Http\Response
-     */
     public function update(UpdateCategoryRequest $request, $id)
     {
 
-        $requestValidated = $request->validated();
-
         $category = Category::findOrFail($id);
 
-        $category->update($requestValidated);
+        $category->update($request->validated());
 
         return CategoryResource::make($category);
-
     }
 
+    protected function findCategories($gender, $category)
+    {
+
+        $products = Product::whereGender($gender)
+            ->get()
+            ->pluck('category_id')
+            ->unique();
+
+        return ($category == 'clothing')
+            ? Category::findOrFail($products)
+            ->where('name', '!=', 'shoes')
+            ->where('name', '!=', 'bags')
+            : Category::findOrFail($products);
+    }
 }

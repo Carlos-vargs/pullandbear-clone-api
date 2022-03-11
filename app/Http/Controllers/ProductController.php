@@ -11,43 +11,16 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
 
-        $params = $request->query();
+        $products = $this->findProducts($request->gender, $request->category);
 
-        $genderParam = $params['gender'];
-        $filterParam = $params['filter'];
-
-        if ($filterParam == 'clothing') {
-            $result = Product::where('gender', $genderParam)->get();
-        } else {
-            $result = Category::where('name', $filterParam)
-                ->with([
-                    'products' => function ($query) use ($genderParam) {
-                        $query->where('gender', $genderParam);
-                    },
-                ])
-                ->get()
-                ->pluck('products')
-                ->collapse();
-        }
-
-        return ProductResource::collection($result);
-
+        return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreProductRequest  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(StoreProductRequest $request)
     {
 
@@ -69,37 +42,16 @@ class ProductController extends Controller
         return ProductResource::make($product);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateProductRequest  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateProductRequest $request, Product $product)
-    {
-        //
-    }
+    protected function findProducts($gender, $category)
+    {      
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
-    {
-        //
+        return ($category == 'clothing')
+            ? Product::whereGender($gender)->get()
+            : Category::whereName($category)
+            ->with(['products' => fn ($query) => $query->whereGender($gender)])
+            ->get()
+            ->pluck('products')
+            ->collapse();
     }
 }
